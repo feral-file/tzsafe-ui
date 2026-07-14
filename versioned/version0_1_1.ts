@@ -7,8 +7,8 @@ import {
   WalletContract,
   WalletOperationBatch,
 } from "@taquito/taquito";
-import { char2Bytes, bytes2Char } from "@taquito/utils";
-import { BigNumber } from "bignumber.js";
+import { stringToBytes, bytesToString } from "@taquito/utils";
+import BigNumber from "bignumber.js";
 import { fa1_2Token } from "../components/FA1_2";
 import { fa2Token } from "../components/FA2Transfer";
 import { DEFAULT_TIMEOUT } from "../context/config";
@@ -24,6 +24,7 @@ import {
 } from "../types/Proposal0_1_1";
 import { contractStorage } from "../types/app";
 import { proposal, proposalContent, status } from "../types/display";
+import { callFlatMethod } from "../utils/legacyContractMethod";
 import { tezToMutez } from "../utils/tez";
 import { promiseWithTimeout } from "../utils/timeout";
 import { toStorage } from "./apis";
@@ -31,7 +32,7 @@ import { ownersForm } from "./forms";
 import { proposals, timeoutAndHash, Versioned, transfer } from "./interface";
 
 function convert(x: string): string {
-  return char2Bytes(x);
+  return stringToBytes(x);
 }
 class Version0_1_1 extends Versioned {
   async generateSpoeOps(
@@ -112,12 +113,12 @@ class Version0_1_1 extends Versioned {
     if (batchOp === undefined) batchOp = t.wallet.batch();
     if (typeof result != "undefined") {
       batchOp.withContractCall(
-        cc.methods.sign_proposal(proposalId, proposalContent, result)
+        callFlatMethod(cc, "sign_proposal", proposalId, proposalContent, result)
       );
     }
     if (resolve) {
       batchOp.withContractCall(
-        cc.methods.resolve_proposal(proposalId, proposalContent)
+        callFlatMethod(cc, "resolve_proposal", proposalId, proposalContent)
       );
     }
     let op = await batchOp.send();
@@ -151,7 +152,7 @@ class Version0_1_1 extends Versioned {
       })
       .filter(x => !!x);
 
-    let params = cc.methods.create_proposal(content).toTransferParams();
+    let params = cc.methodsObject.create_proposal(content).toTransferParams();
 
     let op = await t.wallet.transfer(params).send();
 
@@ -347,7 +348,7 @@ class Version0_1_1 extends Versioned {
                 {
                   status: "Non-executed;",
                   meta: content.execute_lambda.metadata
-                    ? bytes2Char(content.execute_lambda.metadata)
+                    ? bytesToString(content.execute_lambda.metadata)
                     : "No meta supplied",
                   lambda: emitMicheline(
                     JSON.parse(content.execute_lambda.lambda)
@@ -360,7 +361,7 @@ class Version0_1_1 extends Versioned {
                 {
                   status: "Executed; lambda unavailable",
                   meta: content.execute_lambda.metadata
-                    ? bytes2Char(content.execute_lambda.metadata)
+                    ? bytesToString(content.execute_lambda.metadata)
                     : "No meta supplied",
                 },
                 null,

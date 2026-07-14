@@ -6,8 +6,8 @@ import {
   WalletContract,
   WalletOperationBatch,
 } from "@taquito/taquito";
-import { char2Bytes, bytes2Char, num2PaddedHex } from "@taquito/utils";
-import { BigNumber } from "bignumber.js";
+import { stringToBytes, bytesToString, num2PaddedHex } from "@taquito/utils";
+import BigNumber from "bignumber.js";
 import { fa1_2Token } from "../components/FA1_2";
 import { fa2Token } from "../components/FA2Transfer";
 import { DEFAULT_TIMEOUT } from "../context/config";
@@ -32,7 +32,7 @@ import { ownersForm } from "./forms";
 import { proposals, timeoutAndHash, Versioned, transfer } from "./interface";
 
 function convert(x: string): string {
-  return char2Bytes(x);
+  return stringToBytes(x);
 }
 
 class Version0_3_1 extends Versioned {
@@ -131,7 +131,10 @@ class Version0_3_1 extends Versioned {
     if (resolve) {
       batchOp.withContractCall(
         // resolve proposal
-        cc.methods.proof_of_event_challenge(hexProposalId, proposalBytes)
+        cc.methodsObject.proof_of_event_challenge({
+          challenge_id: hexProposalId,
+          payload: proposalBytes,
+        })
       );
     }
     let op = await batchOp.send();
@@ -165,7 +168,7 @@ class Version0_3_1 extends Versioned {
       })
       .filter(x => !!x);
 
-    let params = cc.methods.create_proposal(content).toTransferParams();
+    let params = cc.methodsObject.create_proposal(content).toTransferParams();
 
     let op = await t.wallet.transfer(params).send();
 
@@ -356,7 +359,7 @@ class Version0_3_1 extends Versioned {
       const metadata = content.execute_lambda.metadata;
 
       const meta = !!metadata
-        ? bytes2Char(typeof metadata === "string" ? metadata : metadata.Some)
+        ? bytesToString(typeof metadata === "string" ? metadata : metadata.Some)
         : "No meta supplied";
 
       const lambda = Array.isArray(contentLambda)

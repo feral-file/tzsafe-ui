@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 
 export const RPC_URL =
   process.env.NEXT_PUBLIC_RPC_URL ?? "https://tezos-shadownet.octez.io/";
@@ -22,21 +22,15 @@ export const PREFERED_NETWORK: NetworkType =
     : NetworkType.CUSTOM;
 
 // The network object actually sent to wallets during the permission handshake.
-// @taquito/beacon-wallet bundles its own (older) copy of @airgap/beacon-types
-// whose NetworkType enum predates newer networks like "shadownet" - passing
-// that string through causes wallets (and/or our own bundled beacon-core) to
-// silently fail to complete the handshake (request sent, no response ever
-// arrives). NetworkType.CUSTOM + an explicit rpcUrl is the long-standing,
-// version-agnostic escape hatch for exactly this case, and is understood by
-// every Beacon wallet regardless of how new the named network is.
+// @taquito/beacon-wallet now ships on the same @ecadlabs/beacon-* fork used
+// here (both understand newer networks like "shadownet" natively), so the
+// network name can be passed through directly instead of the previous
+// NetworkType.CUSTOM escape hatch. An explicit rpcUrl is still supplied for
+// non-mainnet networks so wallets don't have to guess a default endpoint.
 export const WALLET_NETWORK =
   PREFERED_NETWORK === NetworkType.MAINNET
     ? { type: NetworkType.MAINNET }
-    : {
-        type: NetworkType.CUSTOM,
-        name: PREFERED_NETWORK,
-        rpcUrl: RPC_URL,
-      };
+    : { type: PREFERED_NETWORK, rpcUrl: RPC_URL };
 
 export const WERT_URL =
   PREFERED_NETWORK === NetworkType.MAINNET

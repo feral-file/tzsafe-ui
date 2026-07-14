@@ -1,3 +1,4 @@
+import { Checkbox } from "@ariakit/react";
 import {
   AppMetadata,
   BeaconErrorType,
@@ -7,8 +8,7 @@ import {
   SignPayloadRequest,
   SimulatedProofOfEventChallengeRequest,
   TezosOperationType,
-} from "@airgap/beacon-sdk";
-import { Checkbox } from "@ariakit/react";
+} from "@ecadlabs/beacon-sdk";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import * as Switch from "@radix-ui/react-switch";
 import { emitMicheline, Parser, Expr } from "@taquito/michel-codec";

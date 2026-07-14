@@ -1,5 +1,5 @@
 import { MichelsonMap } from "@taquito/taquito";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 
 type content =
   | { execute_lambda: { metadata?: string; lambda: string } }

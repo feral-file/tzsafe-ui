@@ -1,5 +1,5 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import { char2Bytes } from "@taquito/tzip16";
+import { stringToBytes } from "@taquito/utils";
 import BigNumber from "bignumber.js";
 import { describe, expect, it, beforeAll } from "vitest";
 import { proposal } from "../../types/Proposal0_3_4";
@@ -12,7 +12,9 @@ import { retry } from "./util";
 
 const tenMins = 600000;
 const version = "0.3.4";
-const ipfs_file = "ipfs://QmPkai5FJL2QELFcmnmaDHNZ7NRC4XYBdL7P6RLVMNx7eu";
+// No IPFS credentials are configured for e2e, so metadata falls back to the
+// on-chain tezos-storage: scheme (see context/fromIpfs.ts).
+const metadata_uri = "tezos-storage:content";
 
 // There are dependency for test cases. They must in order.
 const test_suit = (setTezosToolkit: (tezos: TezosToolkit) => TezosToolkit) =>
@@ -38,9 +40,10 @@ const test_suit = (setTezosToolkit: (tezos: TezosToolkit) => TezosToolkit) =>
         expect(storage.threshold.isEqualTo(BigNumber(1))).toBe(true);
         expect(storage.proposal_counter.isEqualTo(BigNumber(0))).toBe(true);
         expect(storage.owners).toEqual([owner]);
-        storage.metadata.get("").then((value: string) => {
-          expect(value).toEqual(char2Bytes(ipfs_file));
-        });
+        const metadata_value: string = await retry(() =>
+          storage.metadata.get("")
+        );
+        expect(metadata_value).toEqual(stringToBytes(metadata_uri));
       },
       { timeout: tenMins }
     );

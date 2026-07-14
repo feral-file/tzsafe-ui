@@ -1,10 +1,10 @@
 import { Expr, Prim, IntLiteral, emitMicheline } from "@taquito/michel-codec";
 import {
-  encodePubKey,
+  encodeAddress,
   encodeKeyHash,
   validateAddress,
   ValidationResult,
-  bytes2Char,
+  bytesToString,
 } from "@taquito/utils";
 import { version } from "../types/display";
 import { decodeB58, toRightAssociativePairData } from "../utils/contractParam";
@@ -92,7 +92,7 @@ const rawDataToData = (rawData: Expr, currentParam: param): data => {
   if ("string" in rawData)
     return { [currentParam.name ?? "value"]: rawData.string };
   else if ("bytes" in rawData)
-    return { [currentParam.name ?? "value"]: encodePubKey(rawData.bytes) };
+    return { [currentParam.name ?? "value"]: encodeAddress(rawData.bytes) };
   else if ("int" in rawData)
     return { [currentParam.name ?? "value"]: Number(rawData.int) };
 
@@ -328,8 +328,8 @@ const parsePoe = (
         return [
           true,
           {
-            challengeId: bytes2Char(challengeId.bytes),
-            payload: bytes2Char(payload.bytes),
+            challengeId: bytesToString(challengeId.bytes),
+            payload: bytesToString(payload.bytes),
           },
         ];
       })
@@ -432,7 +432,7 @@ export const parseLambda = (
           } else {
             //@ts-expect-error
             if (!!expr.args?.[1]?.bytes) {
-              const addr = encodePubKey(
+              const addr = encodeAddress(
                 //@ts-expect-error
                 expr.args[1].bytes
               );
@@ -579,7 +579,7 @@ export const parseLambda = (
           } else {
             //@ts-expect-error
             if (!!expr.args?.[1]?.bytes) {
-              const addr = encodePubKey(
+              const addr = encodeAddress(
                 //@ts-expect-error
                 expr.args[1].bytes
               );

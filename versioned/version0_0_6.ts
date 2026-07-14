@@ -7,12 +7,13 @@ import {
   WalletContract,
   WalletOperationBatch,
 } from "@taquito/taquito";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { DEFAULT_TIMEOUT } from "../context/config";
 import { generateFA2Michelson } from "../context/generateLambda";
 import { content, contractStorage as storage } from "../types/Proposal0_0_6";
 import { contractStorage } from "../types/app";
 import { proposal, proposalContent, status } from "../types/display";
+import { callFlatMethod } from "../utils/legacyContractMethod";
 import { promiseWithTimeout } from "../utils/timeout";
 import { matchLambda, toStorage } from "./apis";
 import { ownersForm } from "./forms";
@@ -100,11 +101,13 @@ class Version0_0_6 extends Versioned {
     if (batchOp === undefined) batchOp = t.wallet.batch();
     if (typeof result != "undefined") {
       batchOp.withContractCall(
-        cc.methods.sign_proposal_only(proposalId, result)
+        callFlatMethod(cc, "sign_proposal_only", proposalId, result)
       );
     }
     if (resolve) {
-      batchOp.withContractCall(cc.methods.resolve_proposal(proposalId));
+      batchOp.withContractCall(
+        callFlatMethod(cc, "resolve_proposal", proposalId)
+      );
     }
     let op = await batchOp.send();
 
@@ -132,7 +135,7 @@ class Version0_0_6 extends Versioned {
         }
       })
       .filter(x => !!x);
-    let params = cc.methods.create_proposal(content).toTransferParams();
+    let params = cc.methodsObject.create_proposal(content).toTransferParams();
     let op = await t.wallet.transfer(params).send();
     const transacValue = await promiseWithTimeout(
       op.transactionOperation(),

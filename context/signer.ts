@@ -1,4 +1,4 @@
-import { SigningType } from "@airgap/beacon-sdk";
+import { SigningType } from "@ecadlabs/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { Signer } from "@taquito/taquito";
 import { buf2hex, hex2buf } from "@taquito/utils";

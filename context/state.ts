@@ -1,4 +1,4 @@
-import { AccountInfo, getSenderId } from "@airgap/beacon-sdk";
+import { AccountInfo, getSenderId } from "@ecadlabs/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { PollingSubscribeProvider, TezosToolkit } from "@taquito/taquito";
 import { Tzip12Module } from "@taquito/tzip12";

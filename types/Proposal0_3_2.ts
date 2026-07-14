@@ -1,7 +1,7 @@
 import { MichelsonType, Expr } from "@taquito/michel-codec";
 import { Schema } from "@taquito/michelson-encoder";
 import { MichelsonMap } from "@taquito/taquito";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 
 type content =
   | {

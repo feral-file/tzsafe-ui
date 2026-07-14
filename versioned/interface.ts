@@ -7,7 +7,7 @@ import {
   WalletOperationBatch,
 } from "@taquito/taquito";
 import { validateAddress, ValidationResult } from "@taquito/utils";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { TZKT_API_URL } from "../context/config";
 import { proofOfEventSchema as proposalSchema_0_3_1 } from "../types/Proposal0_3_1";
 import { proofOfEventSchema as proposalSchema_0_3_2 } from "../types/Proposal0_3_2";

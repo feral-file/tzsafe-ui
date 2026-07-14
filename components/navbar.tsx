@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";

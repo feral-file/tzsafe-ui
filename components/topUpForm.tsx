@@ -18,6 +18,7 @@ import {
   contractStorage,
 } from "../context/state";
 import fetchVersion from "../context/version";
+import { callFlatMethod } from "../utils/legacyContractMethod";
 import { mutezToTez, tezToMutez } from "../utils/tez";
 import { debounce, promiseWithTimeout } from "../utils/timeout";
 import { signers, toStorage } from "../versioned/apis";
@@ -196,7 +197,11 @@ function TopUp(props: {
 
         return {
           kind: OpKind.TRANSACTION,
-          ...contract.methods.transfer(schema.Execute(data)).toTransferParams(),
+          ...callFlatMethod(
+            contract,
+            "transfer",
+            schema.Execute(data)
+          ).toTransferParams(),
         };
       })
     )) as transfer;
@@ -208,19 +213,19 @@ function TopUp(props: {
 
           return tokens.map(formToken => ({
             kind: OpKind.TRANSACTION,
-            ...contract.methods
-              .transfer(
-                state.address,
-                state.currentContract,
-                BigNumber(formToken.amount ?? 0)
-                  .multipliedBy(
-                    BigNumber(10).pow(
-                      formToken.token?.token.metadata?.decimals ?? 0
-                    )
+            ...callFlatMethod(
+              contract,
+              "transfer",
+              state.address,
+              state.currentContract,
+              BigNumber(formToken.amount ?? 0)
+                .multipliedBy(
+                  BigNumber(10).pow(
+                    formToken.token?.token.metadata?.decimals ?? 0
                   )
-                  .toNumber()
-              )
-              .toTransferParams(),
+                )
+                .toNumber()
+            ).toTransferParams(),
           }));
         })
       )

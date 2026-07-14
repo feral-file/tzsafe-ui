@@ -1,5 +1,4 @@
 import { Dispatch } from "react";
-import { WALLET_NETWORK } from "../context/config";
 import { action, tezosState } from "../context/state";
 
 export const connectWallet = async (
@@ -8,10 +7,10 @@ export const connectWallet = async (
 ): Promise<void> => {
   if (!state.beaconWallet) return;
 
-  await state?.beaconWallet!.requestPermissions({
-    //@ts-expect-error NetworkType does not match (types between Taquito and Beacon doesn't match)
-    network: WALLET_NETWORK,
-  });
+  // The network is already configured on the BeaconWallet/DAppClient
+  // instance itself (see WALLET_NETWORK in pages/_app.tsx); newer Beacon
+  // versions no longer accept (or need) a per-request network override.
+  await state?.beaconWallet!.requestPermissions();
 
   const userAddress: string = await state?.beaconWallet!.getPKH()!;
   const balance = await state?.connection.tz.getBalance(userAddress);

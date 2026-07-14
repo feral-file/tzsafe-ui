@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 import BigNumber from "bignumber.js";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";

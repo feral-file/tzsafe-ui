@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 import { PREFERED_NETWORK } from "../context/config";
 
 const Footer = ({

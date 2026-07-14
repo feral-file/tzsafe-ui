@@ -7,12 +7,12 @@ import {
 } from "@taquito/taquito";
 import {
   validateAddress,
-  encodePubKey,
+  encodeAddress,
   encodeKey,
   encodeKeyHash,
 } from "@taquito/utils";
 import { assertNever } from "assert-never";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { generateExecuteContractMichelson } from "../context/generateLambda";
 import { version } from "../types/display";
 
@@ -37,7 +37,6 @@ type michelsonType =
   | "chest_key"
   | "signature"
   | "unit"
-  | "tx_rollup_l2_address"
   | "or"
   | "pair"
   | "list"
@@ -255,8 +254,6 @@ function parseSchema(
         },
         counter,
       ];
-    case "tx_rollup_l2_address":
-      throw new Error("can't happen: this type has been disable");
     case "or": {
       const schemas = Object.entries(token.schema);
       let new_counter = counter;
@@ -448,8 +445,6 @@ function evalTaquitoParam(
       );
     case "unit":
       return [["unit"]];
-    case "tx_rollup_l2_address":
-      throw new Error("can't happen: this type has been disabled");
     case "or": {
       const key = tableValue[getFieldName(token.counter)];
       const child = key && token.children.find(x => x.name == key);
@@ -779,10 +774,6 @@ function decodeB58(type: Expr, data: Expr): Expr {
           return data;
         }
       }
-      case "tx_rollup_l2_address":
-        throw new Error(
-          "Internal: tx_rollup_l2_address is disable by protocol."
-        );
       case "key": {
         if ("bytes" in data) {
           let decode = encodeKey(data.bytes);
@@ -798,7 +789,7 @@ function decodeB58(type: Expr, data: Expr): Expr {
       case "contract":
       case "address": {
         if ("bytes" in data) {
-          let decode = encodePubKey(data.bytes);
+          let decode = encodeAddress(data.bytes);
           if (!!decode) return { string: decode };
           else
             throw new Error(
@@ -817,7 +808,7 @@ function decodeB58(type: Expr, data: Expr): Expr {
         if ("prim" in data && !!data.args && Array.isArray(data.args)) {
           let [ticketer, value] = data.args;
           if ("bytes" in ticketer) {
-            let decode_ticketer = encodePubKey(ticketer.bytes);
+            let decode_ticketer = encodeAddress(ticketer.bytes);
             if (!!decode_ticketer) ticketer = { string: decode_ticketer };
             else
               throw new Error(
@@ -835,7 +826,7 @@ function decodeB58(type: Expr, data: Expr): Expr {
               !!value.args?.[0] &&
               "bytes" in value.args[0]
             ) {
-              let decode_value = encodePubKey(value.args[0].bytes);
+              let decode_value = encodeAddress(value.args[0].bytes);
               if (!!decode_value) value.args[0] = { string: decode_value };
               else
                 throw new Error(

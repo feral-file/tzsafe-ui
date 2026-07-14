@@ -7,8 +7,8 @@ import {
   WalletContract,
   WalletOperationBatch,
 } from "@taquito/taquito";
-import { char2Bytes, bytes2Char } from "@taquito/utils";
-import { BigNumber } from "bignumber.js";
+import { stringToBytes, bytesToString } from "@taquito/utils";
+import BigNumber from "bignumber.js";
 import { DEFAULT_TIMEOUT } from "../context/config";
 import { generateFA2Michelson } from "../context/generateLambda";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../types/Proposal0_0_10";
 import { contractStorage } from "../types/app";
 import { proposal, proposalContent, status } from "../types/display";
+import { callFlatMethod } from "../utils/legacyContractMethod";
 import { promiseWithTimeout } from "../utils/timeout";
 import { matchLambda, toStorage } from "./apis";
 import { ownersForm } from "./forms";
@@ -25,7 +26,7 @@ import { timeoutAndHash, transfer, Versioned } from "./interface";
 import { proposals } from "./interface";
 
 function convert(x: string): string {
-  return char2Bytes(x);
+  return stringToBytes(x);
 }
 class Version0_0_10 extends Versioned {
   async generateSpoeOps(
@@ -108,12 +109,23 @@ class Version0_0_10 extends Versioned {
     if (batchOp === undefined) batchOp = t.wallet.batch();
     if (typeof result != "undefined") {
       batchOp.withContractCall(
-        cc.methods.sign_proposal(BigNumber(proposalId), proposalContent, result)
+        callFlatMethod(
+          cc,
+          "sign_proposal",
+          BigNumber(proposalId),
+          proposalContent,
+          result
+        )
       );
     }
     if (resolve) {
       batchOp.withContractCall(
-        cc.methods.resolve_proposal(BigNumber(proposalId), proposalContent)
+        callFlatMethod(
+          cc,
+          "resolve_proposal",
+          BigNumber(proposalId),
+          proposalContent
+        )
       );
     }
     let op = await batchOp.send();
@@ -151,7 +163,7 @@ class Version0_0_10 extends Versioned {
       })
       .filter(x => !!x);
 
-    let params = cc.methods.create_proposal(content).toTransferParams();
+    let params = cc.methodsObject.create_proposal(content).toTransferParams();
     let op = await t.wallet.transfer(params).send();
 
     const transacValue = await promiseWithTimeout(
@@ -269,7 +281,7 @@ class Version0_0_10 extends Versioned {
                   ? {
                       status: "Cant parse lambda",
                       meta: content.execute_lambda.metadata
-                        ? bytes2Char(content.execute_lambda.metadata)
+                        ? bytesToString(content.execute_lambda.metadata)
                         : "No meta supplied",
                       lambda: emitMicheline(
                         JSON.parse(content.execute_lambda.lambda)
@@ -283,7 +295,7 @@ class Version0_0_10 extends Versioned {
                 {
                   status: "Executed; lambda unavailable",
                   meta: content.execute_lambda.metadata
-                    ? bytes2Char(content.execute_lambda.metadata)
+                    ? bytesToString(content.execute_lambda.metadata)
                     : "No meta supplied",
                 },
                 null,

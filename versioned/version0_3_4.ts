@@ -6,7 +6,7 @@ import {
   OpKind,
 } from "@taquito/taquito";
 import { stringToBytes, bytesToString } from "@taquito/utils";
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
 import { content, contractStorage as c1 } from "../types/Proposal0_3_4";
 import { contractStorage } from "../types/app";
 import { proposalContent } from "../types/display";
@@ -21,7 +21,9 @@ class Version0_3_4 extends Version0_3_3 {
     const encodedPayload = stringToBytes(payload);
 
     const ops = [
-      cc.methods.proof_of_event_challenge(encodedPayload).toTransferParams(),
+      cc.methodsObject
+        .proof_of_event_challenge(encodedPayload)
+        .toTransferParams(),
       cc.methodsObject
         .sign_proposal({
           agreement: true,
@@ -71,7 +73,7 @@ class Version0_3_4 extends Version0_3_3 {
     poe_proposals.forEach(async v => {
       if (v.type === "poe") {
         const content = stringToBytes(v.values.payload);
-        const params = cc.methods.proof_of_event_challenge(content);
+        const params = cc.methodsObject.proof_of_event_challenge(content);
 
         if (!batchOp) {
           throw new Error(

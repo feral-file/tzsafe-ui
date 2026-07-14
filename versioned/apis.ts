@@ -7,8 +7,8 @@ import {
 } from "@taquito/michel-codec";
 import { ParameterSchema } from "@taquito/michelson-encoder";
 import { MichelsonMap, WalletContract } from "@taquito/taquito";
-import { encodePubKey } from "@taquito/utils";
-import { BigNumber } from "bignumber.js";
+import { encodeAddress } from "@taquito/utils";
+import BigNumber from "bignumber.js";
 import { contractStorage } from "../types/app";
 import { version, proposal } from "../types/display";
 import { Versioned } from "./interface";
@@ -119,7 +119,7 @@ let lambdaTable: {
     let addr = cast<BytesLiteral>(expr).bytes;
     return {
       ...acc,
-      contract_address: encodePubKey(addr),
+      contract_address: encodeAddress(addr),
     };
   },
   "2.CONTRACT": (acc, item) => {

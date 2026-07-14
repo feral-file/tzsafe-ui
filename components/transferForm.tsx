@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import {
   validateContractAddress,

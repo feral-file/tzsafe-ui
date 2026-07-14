@@ -10,7 +10,7 @@ import {
   SigningType,
   BeaconResponseInputMessage,
   encodePoeChallengePayload,
-} from "@airgap/beacon-sdk";
+} from "@ecadlabs/beacon-sdk";
 import { PreapplyParams } from "@taquito/rpc";
 import { TinyEmitter } from "tiny-emitter";
 

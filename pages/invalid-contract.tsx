@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PREFERED_NETWORK } from "../context/config";

@@ -1,4 +1,4 @@
-import { getSenderId } from "@airgap/beacon-sdk";
+import { getSenderId } from "@ecadlabs/beacon-sdk";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import bs58check from "bs58check";
 import { useSearchParams } from "next/navigation";

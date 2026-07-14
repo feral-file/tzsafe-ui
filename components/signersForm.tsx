@@ -1,6 +1,10 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@ecadlabs/beacon-sdk";
 import { Parser } from "@taquito/michel-codec";
-import { validateAddress, ValidationResult, char2Bytes } from "@taquito/utils";
+import {
+  validateAddress,
+  ValidationResult,
+  stringToBytes,
+} from "@taquito/utils";
 import {
   ErrorMessage,
   Field,
@@ -203,7 +207,7 @@ const SignersForm: FC<{
       );
       ops.push({
         execute_lambda: {
-          metadata: char2Bytes(
+          metadata: stringToBytes(
             JSON.stringify({
               baker_address: bakerAddress,
             })
@@ -218,7 +222,7 @@ const SignersForm: FC<{
 
       ops.push({
         execute_lambda: {
-          metadata: char2Bytes(
+          metadata: stringToBytes(
             JSON.stringify({
               old_baker_address: oldBakerAddress,
             })

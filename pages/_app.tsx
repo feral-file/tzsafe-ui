@@ -3,7 +3,7 @@ import {
   NetworkType,
   Regions,
   StorageKey,
-} from "@airgap/beacon-sdk";
+} from "@ecadlabs/beacon-sdk";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { validateAddress, ValidationResult } from "@taquito/utils";
@@ -218,9 +218,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
         const wallet = new BeaconWallet({
           name: "TzSafe",
-          //@ts-expect-error Beacon beta and taquito's beacon are incompatible, but it's only a type error
           network: WALLET_NETWORK,
-          //@ts-expect-error Beacon beta and taquito's beacon are incompatible, but it's only a type error
           storage: walletStorage,
           matrixNodes: MATRIX_NODES,
         });
