@@ -50,3 +50,16 @@ export const PROPOSAL_DURATION_WARNING = 600;
 
 export const MARIGOLD_LOGO_URL =
   "https://uploads-ssl.webflow.com/616ab4741d375d1642c19027/61793ee65c891c190fcaa1d0_Vector(1).png";
+
+export const FERAL_FILE_URL = "https://feralfile.com/";
+export const FERAL_FILE_CONTACT_URL = "https://feralfile.com/contact";
+export const TZSAFE_DOCS_URL = "https://docs.tzsafe.marigold.dev/";
+export const TZSAFE_REPO_URL = "https://github.com/feral-file/tzsafe-ui";
+export const MAINNET_UI_URL =
+  process.env.NEXT_PUBLIC_MAINNET_UI_URL ?? "https://tzs.feralfile.com/";
+// Set when a shadownet deployment exists (e.g. Cloudflare Pages branch URL).
+export const SHADOWNET_UI_URL = process.env.NEXT_PUBLIC_SHADOWNET_UI_URL ?? "";
+export const TZKT_EXPLORER_URL =
+  PREFERED_NETWORK === NetworkType.MAINNET
+    ? "https://tzkt.io/"
+    : "https://shadownet.tzkt.io/";

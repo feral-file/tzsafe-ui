@@ -1,6 +1,7 @@
 {
   "name": "multisig",
   "version": "0.1.0",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "env-cmd -f ./config/.env.dev next dev",
