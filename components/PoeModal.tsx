@@ -503,9 +503,9 @@ const PoeModal = () => {
                       <a
                         className="text-zinc-200 hover:text-zinc-300"
                         href={`https://${
-                          PREFERED_NETWORK === NetworkType.GHOSTNET
-                            ? "ghostnet."
-                            : ""
+                          PREFERED_NETWORK === NetworkType.MAINNET
+                            ? ""
+                            : `${PREFERED_NETWORK}.`
                         }tzkt.io/${timeoutAndHash[1]}`}
                         target="_blank"
                         rel="noreferrer"

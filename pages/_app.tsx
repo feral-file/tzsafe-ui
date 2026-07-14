@@ -1,4 +1,9 @@
-import { LocalStorage, NetworkType } from "@airgap/beacon-sdk";
+import {
+  LocalStorage,
+  NetworkType,
+  Regions,
+  StorageKey,
+} from "@airgap/beacon-sdk";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { validateAddress, ValidationResult } from "@taquito/utils";
@@ -14,7 +19,7 @@ import Footer from "../components/footer";
 import NavBar from "../components/navbar";
 import P2PClient from "../context/P2PClient";
 import { AliasesProvider } from "../context/aliases";
-import { PREFERED_NETWORK } from "../context/config";
+import { WALLET_NETWORK } from "../context/config";
 import {
   tezosState,
   action,
@@ -27,6 +32,24 @@ import {
 } from "../context/state";
 import "../styles/globals.css";
 import { fetchContract } from "../utils/fetchContract";
+
+// The default `papers.tech`-hosted matrix relay nodes have proven unreliable
+// (CORS/network failures observed across multiple sessions and deployments),
+// which can hang P2P/QR-pairing setup indefinitely. Restrict to the
+// `octez.io` nodes (operated by Nomadic Labs), which have been consistently
+// reachable, for both the wallet-side and dapp-side P2P transports.
+const MATRIX_NODES = {
+  [Regions.EUROPE_WEST]: [
+    "beacon-node-1.octez.io",
+    "beacon-node-2.octez.io",
+    "beacon-node-3.octez.io",
+    "beacon-node-4.octez.io",
+    "beacon-node-5.octez.io",
+    "beacon-node-6.octez.io",
+    "beacon-node-7.octez.io",
+    "beacon-node-8.octez.io",
+  ],
+};
 
 export default function App({ Component, pageProps }: AppProps) {
   const [state, dispatch]: [tezosState, React.Dispatch<action>] = useReducer(
@@ -162,33 +185,72 @@ export default function App({ Component, pageProps }: AppProps) {
         let a = init();
         dispatch({ type: "init", payload: a });
 
-        const p2pClient = new P2PClient({
-          name: "TzSafe",
-          storage: new LocalStorage("P2P"),
-        });
+        const walletStorage = new LocalStorage("WALLET");
+        const p2pStorage = new LocalStorage("P2P");
 
-        await p2pClient.init();
-        await p2pClient.connect(p2pClient.handleMessages);
-
-        // Connect stored peers
-        Object.entries(a.connectedDapps).forEach(async ([address, dapps]) => {
-          Object.values(dapps).forEach(data => {
-            p2pClient
-              .addPeer(data)
-              .catch(_ => console.log("Failed to connect to peer", data));
-          });
-        });
+        // The SDK caches the last-used relay node in storage and, on the next
+        // load, tries to reach *only* that cached node before ever consulting
+        // matrixNodes above - with no timeout and no fallback. If that node
+        // was decommissioned (a real, documented issue during the Beacon
+        // relay infrastructure migration - see
+        // https://github.com/ecadlabs/taquito/issues/3332), this hangs
+        // forever and permanently blocks wallet connection for anyone who
+        // connected before this fix. Clearing it forces a fresh, safe
+        // rediscovery (restricted to MATRIX_NODES) on every load.
+        await Promise.all([
+          walletStorage.delete(StorageKey.MATRIX_SELECTED_NODE).catch(() => {}),
+          p2pStorage.delete(StorageKey.MATRIX_SELECTED_NODE).catch(() => {}),
+        ]);
 
         const wallet = new BeaconWallet({
           name: "TzSafe",
-          //@ts-expect-error NetworkType does not match with expected preferredNetwork type (types between Taquito and Beacon doesn't match)
-          preferredNetwork: PREFERED_NETWORK,
           //@ts-expect-error Beacon beta and taquito's beacon are incompatible, but it's only a type error
-          storage: new LocalStorage("WALLET"),
+          network: WALLET_NETWORK,
+          //@ts-expect-error Beacon beta and taquito's beacon are incompatible, but it's only a type error
+          storage: walletStorage,
+          matrixNodes: MATRIX_NODES,
         });
 
         dispatch!({ type: "beaconConnect", payload: wallet });
-        dispatch!({ type: "p2pConnect", payload: p2pClient });
+
+        // The P2P/matrix transport relies on third-party relay servers that
+        // can be slow, flaky, or unreachable from some origins. Initialize it
+        // in the background (with a timeout) so a relay outage only disables
+        // P2P/QR pairing instead of blocking wallet connection entirely -
+        // extension wallets like Temple don't need this transport at all.
+        (async () => {
+          try {
+            const p2pClient = new P2PClient({
+              name: "TzSafe",
+              storage: p2pStorage,
+              matrixNodes: MATRIX_NODES,
+            });
+
+            await p2pClient.init();
+            await Promise.race([
+              p2pClient.connect(p2pClient.handleMessages),
+              new Promise((_, reject) =>
+                setTimeout(
+                  () => reject(new Error("P2P client connect timed out")),
+                  15000
+                )
+              ),
+            ]);
+
+            // Connect stored peers
+            Object.entries(a.connectedDapps).forEach(([address, dapps]) => {
+              Object.values(dapps).forEach(data => {
+                p2pClient
+                  .addPeer(data)
+                  .catch(_ => console.log("Failed to connect to peer", data));
+              });
+            });
+
+            dispatch!({ type: "p2pConnect", payload: p2pClient });
+          } catch (e) {
+            console.error("Failed to initialize P2P client", e);
+          }
+        })();
 
         if (state.attemptedInitialLogin) return;
 

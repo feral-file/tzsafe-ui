@@ -20,7 +20,9 @@ export default function InvalidContract() {
         <a
           className="text-zinc-400 hover:text-white"
           href={`https://${
-            PREFERED_NETWORK === NetworkType.GHOSTNET ? "ghostnet." : ""
+            PREFERED_NETWORK === NetworkType.MAINNET
+              ? ""
+              : `${PREFERED_NETWORK}.`
           }tzkt.io/${address}`}
           target="_blank"
           rel="noreferrer"

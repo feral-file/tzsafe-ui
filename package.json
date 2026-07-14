@@ -8,6 +8,10 @@
     "build": "next build",
     "build:dev": "env-cmd -f ./config/.env.dev next build",
     "build:mainnet": "env-cmd -f ./config/.env.mainnet next build",
+    "build:livenet": "env-cmd -f ./config/.env.mainnet next build",
+    "build:testnet": "env-cmd -f ./config/.env.dev next build",
+    "deploy:livenet": "wrangler pages deploy out --project-name tzsafe-ui",
+    "deploy:testnet": "wrangler pages deploy out --project-name tzsafe-ui --branch shadownet",
     "start:mainnet": "env-cmd -f ./config/.env.mainnet next dev",
     "lint": "next lint",
     "format": "prettier --write pages/ components/ context/ types/ versioned/ utils/ test/",
@@ -15,13 +19,28 @@
     "dev:test": "vitest",
     "test": "vitest run",
     "check": "tsc",
-    "get_tez": "npx @oxheadalpha/get-tez tz1Rwf9UAGpsNjE6tFGJpxPKRunteiQT7XZF --amount 20 --network ghostnet"
+    "get_tez": "npx @oxheadalpha/get-tez tz1Rwf9UAGpsNjE6tFGJpxPKRunteiQT7XZF --amount 20 --faucet-url https://faucet.shadownet.teztnets.com"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown pages/ components/ context/ types/ versioned/ utils/"
   },
+  "overrides": {
+    "@stablelib/binary": "1.0.1",
+    "@stablelib/bytes": "1.0.1",
+    "@stablelib/ed25519": "1.0.3",
+    "@stablelib/hash": "1.0.1",
+    "@stablelib/int": "1.0.1",
+    "@stablelib/keyagreement": "1.0.1",
+    "@stablelib/nacl": "1.0.4",
+    "@stablelib/random": "1.0.2",
+    "@stablelib/sha512": "1.0.1",
+    "@stablelib/utf8": "1.0.2",
+    "@stablelib/wipe": "1.0.1",
+    "@stablelib/x25519": "1.0.3",
+    "@stablelib/x25519-session": "1.0.4"
+  },
   "dependencies": {
-    "@airgap/beacon-sdk": "^4.1.3-beta.1",
+    "@airgap/beacon-sdk": "^4.8.1",
     "@ariakit/react": "^0.1.8",
     "@radix-ui/react-icons": "^1.1.1",
     "@radix-ui/react-select": "^1.2.0",
@@ -78,6 +97,7 @@
     "prettier-plugin-tailwindcss": "^0.2.3",
     "tailwindcss": "^3.2.4",
     "vite": "^5.0.10",
-    "vitest": "^1.0.4"
+    "vitest": "^1.0.4",
+    "wrangler": "^4.110.0"
   }
 }

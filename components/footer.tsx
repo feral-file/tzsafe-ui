@@ -37,13 +37,13 @@ const Footer = ({
           </a>
           <a
             href={`https://${
-              PREFERED_NETWORK === NetworkType.MAINNET ? "ghostnet." : ""
+              PREFERED_NETWORK === NetworkType.MAINNET ? "shadownet." : ""
             }tzsafe.marigold.dev/`}
             target="_blank"
             rel="noreferrer"
           >
             {PREFERED_NETWORK === NetworkType.MAINNET
-              ? "TzSafe Ghostnet"
+              ? "TzSafe Shadownet"
               : "TzSafe Mainnet"}
           </a>
         </div>

@@ -1,0 +1,9 @@
+{
+  "name": "tzsafe-ui",
+  "compatibility_date": "2024-07-01",
+  "pages_build_output_dir": "out"
+  // For `wrangler pages deploy`, deep links like /KT1.../dashboard rely on
+  // serving 404.html for unknown routes. Configure that in the Cloudflare
+  // dashboard: Workers & Pages → your project → Settings → enable SPA /
+  // 404 fallback (serve 404.html for unmatched routes).
+}
