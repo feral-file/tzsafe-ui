@@ -188,18 +188,32 @@ export default function App({ Component, pageProps }: AppProps) {
         const walletStorage = new LocalStorage("WALLET");
         const p2pStorage = new LocalStorage("P2P");
 
-        // The SDK caches the last-used relay node in storage and, on the next
-        // load, tries to reach *only* that cached node before ever consulting
-        // matrixNodes above - with no timeout and no fallback. If that node
-        // was decommissioned (a real, documented issue during the Beacon
-        // relay infrastructure migration - see
-        // https://github.com/ecadlabs/taquito/issues/3332), this hangs
-        // forever and permanently blocks wallet connection for anyone who
-        // connected before this fix. Clearing it forces a fresh, safe
-        // rediscovery (restricted to MATRIX_NODES) on every load.
+        // The SDK caches Matrix state in storage and, on the next load, trusts
+        // that cache over the live server state:
+        //  - MATRIX_SELECTED_NODE: the last-used relay node, reached *only*
+        //    that cached node before ever consulting matrixNodes above, with
+        //    no timeout and no fallback. If that node was decommissioned (a
+        //    real, documented issue during the Beacon relay infrastructure
+        //    migration - see https://github.com/ecadlabs/taquito/issues/3332),
+        //    this hangs forever and permanently blocks wallet connection.
+        //  - MATRIX_PEER_ROOM_IDS / MATRIX_PRESERVED_STATE: which pairing
+        //    "room" and joined-room list to reuse for a given peer. The
+        //    SDK's own source acknowledges this can't be trusted ("we cannot
+        //    trust the current sync state" - P2PCommunicationClient
+        //    getRelevantJoinedRoom) - if server-side membership has since
+        //    diverged (e.g. after re-pairing), sends fail with M_FORBIDDEN
+        //    "not in room", and the self-heal path re-checks the same stale
+        //    cache, so it can get stuck making the same mistake repeatedly.
+        // Clearing all three forces a fresh, safe rediscovery on every load.
         await Promise.all([
           walletStorage.delete(StorageKey.MATRIX_SELECTED_NODE).catch(() => {}),
+          walletStorage.delete(StorageKey.MATRIX_PEER_ROOM_IDS).catch(() => {}),
+          walletStorage
+            .delete(StorageKey.MATRIX_PRESERVED_STATE)
+            .catch(() => {}),
           p2pStorage.delete(StorageKey.MATRIX_SELECTED_NODE).catch(() => {}),
+          p2pStorage.delete(StorageKey.MATRIX_PEER_ROOM_IDS).catch(() => {}),
+          p2pStorage.delete(StorageKey.MATRIX_PRESERVED_STATE).catch(() => {}),
         ]);
 
         const wallet = new BeaconWallet({
