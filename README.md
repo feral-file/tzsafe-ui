@@ -4,7 +4,7 @@ TzSafe is a website to interact with multi-signatures wallets. The goal is to ha
 
 This repository is a fork of [marigold-dev/tzsafe-ui](https://github.com/marigold-dev/tzsafe-ui), maintained by [Feral File](https://feralfile.com/) for internal custody operations. The upstream project did not include a `LICENSE` file; the related [marigold-dev/tzsafe](https://github.com/marigold-dev/tzsafe) contracts repository and TzSafe contract metadata both specify the MIT license. See [LICENSE](LICENSE).
 
-- Documentation can be found [here](https://docs.tzsafe.marigold.dev/).
+- Documentation can be found [here](https://docs.tzsafe.org/).
 - Mainnet deployment: [tzs.feralfile.com](https://tzs.feralfile.com/)
 
 ## How to develop

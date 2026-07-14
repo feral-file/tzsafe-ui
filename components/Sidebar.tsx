@@ -17,7 +17,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { PREFERED_NETWORK } from "../context/config";
+import { PREFERED_NETWORK, TZSAFE_DOCS_URL } from "../context/config";
 import {
   AppDispatchContext,
   AppStateContext,
@@ -640,7 +640,7 @@ const Sidebar = ({
         </Link>
 
         <a
-          href="https://docs.tzsafe.marigold.dev"
+          href={TZSAFE_DOCS_URL}
           target="_blank"
           rel="noreferrer"
           className={linkClass(false, isLoading)}
