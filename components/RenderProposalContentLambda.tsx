@@ -264,7 +264,9 @@ export const contentToData = (
     } else if (type === LambdaType.FA2) {
       const lambdaData = lambda?.data as {
         from_: string;
-        txs: { to_: string; token_id: number; amount: number }[];
+        // `parseLambda` keeps Michelson `int`/`nat` literals as digit
+        // strings to avoid precision loss for large token ids/amounts.
+        txs: { to_: string; token_id: string; amount: string }[];
       }[];
 
       data = {

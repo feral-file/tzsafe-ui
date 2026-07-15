@@ -223,8 +223,11 @@ const RenderProposalContentMetadata = ({
             name,
           }: {
             to_: string;
-            token_id: number;
-            amount: number;
+            // `map2Object` (versioned/apis.ts) already turns the decoded
+            // `BigNumber` nat/int values into digit strings to avoid
+            // precision loss for large token ids/amounts.
+            token_id: string;
+            amount: string;
             name?: string;
           }) => {
             const token = walletTokens.find(

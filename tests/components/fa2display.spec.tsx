@@ -25,7 +25,7 @@ describe("FA2Display Component", () => {
     {
       name: "Token1",
       fa2_address: "tz1",
-      token_id: 1,
+      token_id: "1",
       to: "tz2",
       amount: BigNumber(10),
       hasDecimal: false,

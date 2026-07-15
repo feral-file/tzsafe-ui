@@ -6,6 +6,7 @@
 // inside `mapTransfer`, so this exercises the full "build a proposal"
 // pipeline end to end, not just the Michelson-generating helpers.
 import { WalletContract } from "@taquito/taquito";
+import { bytesToString } from "@taquito/utils";
 import { describe, expect, it } from "vitest";
 import { LambdaType, parseLambda } from "../context/parseLambda";
 import { transfer } from "../versioned/interface";
@@ -114,6 +115,35 @@ describe("Version0_0_10 (no decimals-adjustment fa2 path)", () => {
       },
     ]);
   });
+
+  it("also keeps the huge token id exact in the informational metadata blob (separate from the Michelson lambda)", () => {
+    // Regression test: `mapTransfer` builds a second, purely informational
+    // JSON blob (`execute_lambda.metadata`) alongside the Michelson lambda,
+    // used only for display purposes. It used to run `Number(value.tokenId)`
+    // independently of the Michelson-generating code path, so fixing the
+    // Michelson generator alone didn't fix this: the metadata blob could
+    // still silently store a rounded/exponential-notation token id.
+    const result = versioned.mapTransfer(
+      {
+        type: "fa2",
+        values: [
+          {
+            targetAddress: "targetAddress1",
+            tokenId: HUGE_TOKEN_ID,
+            amount: "1",
+            fa2Address: "fa2address",
+          },
+        ],
+        fields: [],
+      } as unknown as transfer,
+      cc
+    );
+
+    const metadata = JSON.parse(
+      bytesToString((result as any).execute_lambda.metadata)
+    );
+    expect(metadata.payload[0].token_id).toBe(HUGE_TOKEN_ID);
+  });
 });
 
 describe("Version0_0_11 (decimals-adjustment fa2/fa1.2 path, pre-list-operation)", () => {
@@ -170,6 +200,53 @@ describe("Version0_0_11 (decimals-adjustment fa2/fa1.2 path, pre-list-operation)
       spender: "spenderAddress",
       value: hugeAmount,
     });
+  });
+
+  it("also keeps the huge token id exact in the informational metadata blob", () => {
+    const result = versioned.mapTransfer(
+      {
+        type: "fa2",
+        values: [
+          {
+            targetAddress: "targetAddress1",
+            tokenId: HUGE_TOKEN_ID,
+            amount: "1",
+            fa2Address: "fa2address",
+            token: fa2TokenFixture("0"),
+          },
+        ],
+        fields: [],
+      } as unknown as transfer,
+      cc
+    );
+
+    const metadata = JSON.parse(
+      bytesToString((result as any).execute_lambda.metadata)
+    );
+    expect(metadata.payload[0].token_id).toBe(HUGE_TOKEN_ID);
+  });
+
+  it("fa1.2-transfer keeps full precision for a huge amount in the metadata blob too", () => {
+    const hugeAmount = "123456789012345678901234567890";
+
+    const result = versioned.mapTransfer(
+      {
+        type: "fa1.2-transfer",
+        values: {
+          targetAddress: "targetAddress",
+          amount: hugeAmount,
+          fa1_2Address: "fa1_2Address",
+          token: fa1_2TokenFixture("0"),
+        },
+        fields: [],
+      } as unknown as transfer,
+      cc
+    );
+
+    const metadata = JSON.parse(
+      bytesToString((result as any).execute_lambda.metadata)
+    );
+    expect(metadata.payload.amount).toBe(hugeAmount);
   });
 });
 

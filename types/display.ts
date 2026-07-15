@@ -97,7 +97,10 @@ export enum TransferType {
 export type fa2Tokens = {
   fa2_address: string | undefined;
   name: string | undefined;
-  token_id: number;
+  // Kept as a string (not `number`) since Michelson `nat` token ids are
+  // arbitrary precision and can exceed `Number.MAX_SAFE_INTEGER` (e.g.
+  // hash-derived FA2 token ids).
+  token_id: string;
   to: string | undefined;
   imageUri: string | undefined;
   amount: BigNumber;

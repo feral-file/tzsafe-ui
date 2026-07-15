@@ -254,9 +254,9 @@ class Version0_3_1 extends Versioned {
               JSON.stringify({
                 contract_addr: transfer.values[0].targetAddress,
                 payload: transfer.values.map(value => ({
-                  token_id: Number(value.tokenId),
+                  token_id: value.tokenId,
                   fa2_address: value.fa2Address,
-                  amount: Number(value.amount),
+                  amount: value.amount,
                 })),
               })
             ),
@@ -317,7 +317,7 @@ class Version0_3_1 extends Versioned {
             metadata: convert(
               JSON.stringify({
                 payload: {
-                  amount: Number(transfer.values.amount),
+                  amount: transfer.values.amount,
                   fa1_2_address: transfer.values.fa1_2Address,
                   to: transfer.values.targetAddress,
                   name: token.token.metadata?.name ?? 0,

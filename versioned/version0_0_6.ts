@@ -219,9 +219,9 @@ class Version0_0_6 extends Versioned {
               JSON.stringify({
                 contract_addr: transfer.values[0].targetAddress,
                 payload: transfer.values.map(value => ({
-                  token_id: Number(value.tokenId),
+                  token_id: value.tokenId,
                   fa2_address: value.fa2Address,
-                  amount: Number(value.amount),
+                  amount: value.amount,
                 })),
               })
             ),
