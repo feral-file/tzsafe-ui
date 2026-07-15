@@ -257,12 +257,10 @@ class Version0_0_11 extends Versioned {
               return {
                 walletAddress: cc.address,
                 targetAddress: value.targetAddress,
-                tokenId: Number(value.tokenId),
-                amount: BigNumber(value.amount)
-                  .multipliedBy(
-                    BigNumber(10).pow(token.token.metadata?.decimals ?? 0)
-                  )
-                  .toNumber(),
+                tokenId: value.tokenId,
+                amount: BigNumber(value.amount).multipliedBy(
+                  BigNumber(10).pow(token.token.metadata?.decimals ?? 0)
+                ),
                 fa2Address: value.fa2Address,
               };
             })
@@ -296,11 +294,9 @@ class Version0_0_11 extends Versioned {
         const michelsonCode = parser.parseMichelineExpression(
           generateFA1_2ApproveMichelson(this.version, {
             spenderAddress: transfer.values.spenderAddress,
-            amount: BigNumber(transfer.values.amount)
-              .multipliedBy(
-                BigNumber(10).pow(token.token.metadata?.decimals ?? 0)
-              )
-              .toNumber(),
+            amount: BigNumber(transfer.values.amount).multipliedBy(
+              BigNumber(10).pow(token.token.metadata?.decimals ?? 0)
+            ),
             fa1_2Address: transfer.values.fa1_2Address,
           })
         );
@@ -330,11 +326,9 @@ class Version0_0_11 extends Versioned {
         const michelsonCode = parser.parseMichelineExpression(
           generateFA1_2TransferMichelson(this.version, {
             walletAddress: cc.address,
-            amount: BigNumber(transfer.values.amount)
-              .multipliedBy(
-                BigNumber(10).pow(token.token.metadata?.decimals ?? 0)
-              )
-              .toNumber(),
+            amount: BigNumber(transfer.values.amount).multipliedBy(
+              BigNumber(10).pow(token.token.metadata?.decimals ?? 0)
+            ),
             fa1_2Address: transfer.values.fa1_2Address,
             targetAddress: transfer.values.targetAddress,
           })

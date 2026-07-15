@@ -206,8 +206,8 @@ class Version0_0_6 extends Versioned {
             transfer.values.map(value => ({
               walletAddress: cc.address,
               targetAddress: value.targetAddress,
-              tokenId: Number(value.tokenId),
-              amount: Number(value.amount),
+              tokenId: value.tokenId,
+              amount: value.amount,
               fa2Address: value.fa2Address,
             }))
           )

@@ -326,9 +326,9 @@ describe("parseLambda old", () => {
         {
           from_: "walletAddress",
           txs: [
-            { to_: "targetAddress1", token_id: 1, amount: 11 },
-            { to_: "targetAddress2", token_id: 2, amount: 12 },
-            { to_: "targetAddress3", token_id: 3, amount: 13 },
+            { to_: "targetAddress1", token_id: "1", amount: "11" },
+            { to_: "targetAddress2", token_id: "2", amount: "12" },
+            { to_: "targetAddress3", token_id: "3", amount: "13" },
           ],
         },
       ],
@@ -355,7 +355,7 @@ describe("parseLambda old", () => {
       mutez: 0,
       data: {
         spender: "spenderAddress",
-        value: 1,
+        value: "1",
       },
     });
   });
@@ -387,7 +387,7 @@ describe("parseLambda old", () => {
       data: {
         from: "walletAddress",
         to: "targetAddress",
-        amount: 1,
+        amount: "1",
       },
     });
   });
@@ -532,9 +532,9 @@ describe("parseLambda new", () => {
         {
           from_: "walletAddress",
           txs: [
-            { to_: "targetAddress1", token_id: 1, amount: 11 },
-            { to_: "targetAddress2", token_id: 2, amount: 12 },
-            { to_: "targetAddress3", token_id: 3, amount: 13 },
+            { to_: "targetAddress1", token_id: "1", amount: "11" },
+            { to_: "targetAddress2", token_id: "2", amount: "12" },
+            { to_: "targetAddress3", token_id: "3", amount: "13" },
           ],
         },
       ],
@@ -561,7 +561,7 @@ describe("parseLambda new", () => {
       mutez: 0,
       data: {
         spender: "spenderAddress",
-        value: 1,
+        value: "1",
       },
     });
   });
@@ -593,7 +593,7 @@ describe("parseLambda new", () => {
       data: {
         from: "walletAddress",
         to: "targetAddress",
-        amount: 1,
+        amount: "1",
       },
     });
   });

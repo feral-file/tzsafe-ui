@@ -94,7 +94,10 @@ const rawDataToData = (rawData: Expr, currentParam: param): data => {
   else if ("bytes" in rawData)
     return { [currentParam.name ?? "value"]: encodeAddress(rawData.bytes) };
   else if ("int" in rawData)
-    return { [currentParam.name ?? "value"]: Number(rawData.int) };
+    // Kept as the raw digit string (rather than `Number(...)`) since
+    // Michelson `nat`/`int` values (e.g. hash-derived FA2 token ids) are
+    // arbitrary precision and can exceed `Number.MAX_SAFE_INTEGER`.
+    return { [currentParam.name ?? "value"]: rawData.int };
 
   if (rawData.prim === "list")
     return rawData.args?.map(v => rawDataToData(v, currentParam)) ?? [];

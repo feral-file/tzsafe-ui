@@ -12,6 +12,7 @@ import React, {
   useState,
 } from "react";
 import { TZKT_API_URL, MODAL_TIMEOUT, THUMBNAIL_URL } from "../context/config";
+import { toMichelsonNat } from "../context/generateLambda";
 import {
   AppDispatchContext,
   AppStateContext,
@@ -181,16 +182,16 @@ function TopUp(props: {
 
         const data = p.parseMichelineExpression(
           `{ Pair "${state.address}" { ${tokens
-            .map(
-              ({ tokenId, amount, token }) =>
-                `Pair "${state.currentContract}" (Pair ${tokenId} ${BigNumber(
-                  amount ?? 0
-                )
-                  .multipliedBy(
-                    BigNumber(10).pow(token?.token.metadata?.decimals ?? 0)
-                  )
-                  .toNumber()}) ;`
-            )
+            .map(({ tokenId, amount, token }) => {
+              const rawAmount = BigNumber(amount ?? 0).multipliedBy(
+                BigNumber(10).pow(token?.token.metadata?.decimals ?? 0)
+              );
+
+              return `Pair "${state.currentContract}" (Pair ${toMichelsonNat(
+                tokenId ?? 0,
+                "tokenId"
+              )} ${toMichelsonNat(rawAmount, "amount")}) ;`;
+            })
             .join("\n")} } }`
         );
         const schema = new Schema(contract.entrypoints.entrypoints["transfer"]);
@@ -218,13 +219,11 @@ function TopUp(props: {
               "transfer",
               state.address,
               state.currentContract,
-              BigNumber(formToken.amount ?? 0)
-                .multipliedBy(
-                  BigNumber(10).pow(
-                    formToken.token?.token.metadata?.decimals ?? 0
-                  )
+              BigNumber(formToken.amount ?? 0).multipliedBy(
+                BigNumber(10).pow(
+                  formToken.token?.token.metadata?.decimals ?? 0
                 )
-                .toNumber()
+              )
             ).toTransferParams(),
           }));
         })

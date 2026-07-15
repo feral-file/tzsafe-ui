@@ -10,6 +10,7 @@ import {
 import { stringToBytes, bytesToString } from "@taquito/utils";
 import BigNumber from "bignumber.js";
 import { DEFAULT_TIMEOUT } from "../context/config";
+import { generateFA2Michelson } from "../context/generateLambda";
 import {
   content,
   proposal as p1,
@@ -237,8 +238,8 @@ class Version0_0_9 extends Versioned {
             transfer.values.map(value => ({
               walletAddress: cc.address,
               targetAddress: value.targetAddress,
-              tokenId: Number(value.tokenId),
-              amount: Number(value.amount),
+              tokenId: value.tokenId,
+              amount: value.amount,
               fa2Address: value.fa2Address,
             }))
           )
@@ -347,15 +348,3 @@ class Version0_0_9 extends Versioned {
 }
 
 export default Version0_0_9;
-function generateFA2Michelson(
-  version: string,
-  arg1: {
-    walletAddress: string;
-    targetAddress: string;
-    tokenId: number;
-    amount: number;
-    fa2Address: string;
-  }[]
-): string {
-  throw new Error("Function not implemented.");
-}
